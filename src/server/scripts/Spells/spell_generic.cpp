@@ -4469,6 +4469,62 @@ class spell_gen_impatient_mind : public SpellScriptLoader
         }
 };
 
+class spell_gen_aura_masquerade : public SpellScriptLoader
+{
+    enum Masquerade
+    {
+        // Spells
+        SPELL_MASQUERADE = 202477,
+
+        // Models
+        MODEL_MASQUERADE_FEMALE = 69517,
+        MODEL_MASQUERADE_MALE = 69518
+    };
+
+public:
+    spell_gen_aura_masquerade() : SpellScriptLoader("spell_gen_aura_masquerade") { }
+
+    class spell_gen_aura_masquerade_AuraScript : public AuraScript
+    {
+        PrepareAuraScript(spell_gen_aura_masquerade_AuraScript);
+
+        bool Validate(SpellInfo const* /*spellInfo*/) override
+        {
+            return ValidateSpellInfo({ SPELL_MASQUERADE });
+        }
+
+        void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            Unit* target = GetTarget();
+            if (target->GetTypeId() == TYPEID_PLAYER)
+            {
+                if (target->getGender() == GENDER_MALE)
+                    target->SetDisplayId(MODEL_MASQUERADE_MALE);
+                else
+                    target->SetDisplayId(MODEL_MASQUERADE_FEMALE);
+            }
+        }
+
+        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            Unit* target = GetTarget();
+            if (target->GetTypeId() == TYPEID_PLAYER)
+                target->RestoreDisplayId();
+        }
+
+        void Register() override
+        {
+            AfterEffectApply += AuraEffectRemoveFn(spell_gen_aura_masquerade_AuraScript::OnApply, EFFECT_0, SPELL_AURA_TRANSFORM, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove += AuraEffectRemoveFn(spell_gen_aura_masquerade_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_TRANSFORM, AURA_EFFECT_HANDLE_REAL);
+        }
+    };
+
+    AuraScript* GetAuraScript() const override
+    {
+        return new spell_gen_aura_masquerade_AuraScript();
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     new spell_gen_absorb0_hitlimit1();
@@ -4575,4 +4631,5 @@ void AddSC_generic_spell_scripts()
     new spell_gen_azgalor_rain_of_fire_hellfire_citadel();
     new spell_gen_face_rage();
     new spell_gen_impatient_mind();
+    new spell_gen_aura_masquerade();
 }
