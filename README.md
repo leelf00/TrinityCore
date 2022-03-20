@@ -31,13 +31,13 @@ For further information on the TrinityCore project, please visit our project
 website at [TrinityCore.org](https://www.trinitycore.org).
 
 ## Requirements
-
+```shell
 -Ubuntu Server 19.10 (No Version Before or After is Currently Supported. Full build instructions to come)
 -Visual Studio 2019 Latest
 -Boost 1.67 on Linux. Boost 1.71 on Windows
 -MySQL 5.7 (8.0 not supported or tested yet)
 -OpenSSL 1.1.1 Only
-
+```
 
 ## Install
 
