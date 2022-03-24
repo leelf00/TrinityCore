@@ -21,6 +21,7 @@
 #include "BattlefieldWG.h"
 #include "BattlegroundMgr.h"
 #include "Chat.h"
+#include "Containers.h"
 #include "DB2Stores.h"
 #include "DatabaseEnv.h"
 #include "Log.h"
@@ -2242,6 +2243,12 @@ void SpellMgr::LoadSpellInfoStore()
     mSpellInfoMap.resize(sSpellStore.GetNumRows(), NULL);
     std::unordered_map<uint32, SpellInfoLoadHelper> loadData;
 
+    std::unordered_map<int32, BattlePetSpeciesEntry const*> battlePetSpeciesByCreature;
+    std::unordered_map<uint32, BattlePetSpeciesEntry const*> battlePetSpeciesBySpellId;
+    for (BattlePetSpeciesEntry const* battlePetSpecies : sBattlePetSpeciesStore)
+        if (battlePetSpecies->CreatureID)
+            battlePetSpeciesByCreature[battlePetSpecies->CreatureID] = battlePetSpecies;
+
     std::unordered_map<int32, SpellEffectEntryMap> effectsBySpell;
     std::unordered_map<uint32, SpellVisualMap> visualsBySpell;
 
@@ -2258,6 +2265,12 @@ void SpellMgr::LoadSpellInfoStore()
             effectsForDifficulty.resize(std::size_t(effect->EffectIndex + 1));
 
         effectsForDifficulty[effect->EffectIndex] = effect;
+
+        if (effect->Effect == SPELL_EFFECT_SUMMON)
+            if (SummonPropertiesEntry const* summonProperties = sSummonPropertiesStore.LookupEntry(effect->EffectMiscValue[1]))
+                if (summonProperties->Slot == SUMMON_SLOT_MINIPET && summonProperties->Flags & SUMMON_PROP_FLAG_COMPANION)
+                    if (BattlePetSpeciesEntry const* battlePetSpecies = Trinity::Containers::MapGetValuePtr(battlePetSpeciesByCreature, effect->EffectMiscValue[0]))
+                        mBattlePets[effect->SpellID] = battlePetSpecies;
     }
 
     for (SpellAuraOptionsEntry const* auraOptions : sSpellAuraOptionsStore)
@@ -3351,6 +3364,12 @@ void SpellMgr::LoadSpellInfoCorrections()
         const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_1))->RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_200_YARDS); // 200yd
     });
 
+    // Val'kyr Target Search
+    ApplySpellFix({ 69030 }, [](SpellInfo* spellInfo)
+    {
+         spellInfo->Attributes |= SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY;
+    });
+
     // Raging Spirit Visual
     ApplySpellFix({ 69198 }, [](SpellInfo* spellInfo)
     {
@@ -3503,6 +3522,35 @@ void SpellMgr::LoadSpellInfoCorrections()
     {
         spellInfo->Attributes |= SPELL_ATTR0_OUTDOORS_ONLY;
     });
+
+    // Tree of Life (Passive)
+    // DEADMINES SPELLS
+    //
+    // Glubtok
+    // Fists of Flame
+    ApplySpellFix({
+        87874,
+        91268,
+        87896,
+        91269
+    }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(2); // Combat Range
+    });
+
+    // Fists of Frost
+    ApplySpellFix({
+        87899,
+        91272,
+        87901,
+        91273,
+    }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(2); // Combat Range
+    });
+
+    // END OF DEADMINES SPELLS
+
 
     // Tree of Life (Passive)
     ApplySpellFix({ 5420 }, [](SpellInfo* spellInfo)
@@ -3702,9 +3750,9 @@ void SpellMgr::LoadSpellInfoCorrections()
     }
 
     if (SummonPropertiesEntry* properties = const_cast<SummonPropertiesEntry*>(sSummonPropertiesStore.LookupEntry(121)))
-        properties->Title = SUMMON_TYPE_TOTEM;
+        properties->Title = AsUnderlyingType(SummonTitle::Totem);
     if (SummonPropertiesEntry* properties = const_cast<SummonPropertiesEntry*>(sSummonPropertiesStore.LookupEntry(647))) // 52893
-        properties->Title = SUMMON_TYPE_TOTEM;
+        properties->Title = AsUnderlyingType(SummonTitle::Totem);
     if (SummonPropertiesEntry* properties = const_cast<SummonPropertiesEntry*>(sSummonPropertiesStore.LookupEntry(628))) // Hungry Plaguehound
         properties->Control = SUMMON_CATEGORY_PET;
 
@@ -3850,4 +3898,9 @@ uint32 SpellMgr::GetModelForTotem(uint32 spellId, uint8 race) const
 
     TC_LOG_ERROR("spells", "Spell %u with RaceID (%u) have no totem model data defined, set to default model.", spellId, race);
     return 0;
+}
+
+BattlePetSpeciesEntry const* SpellMgr::GetBattlePetSpecies(uint32 spellId) const
+{
+    return Trinity::Containers::MapGetValuePtr(mBattlePets, spellId);
 }

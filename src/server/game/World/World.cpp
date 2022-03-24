@@ -1591,7 +1591,15 @@ void World::SetInitialWorldSettings()
     {
         mapData.emplace(std::piecewise_construct, std::forward_as_tuple(mapEntry->ID), std::forward_as_tuple());
         if (mapEntry->ParentMapID != -1)
+        {
+            ASSERT(mapEntry->CosmeticParentMapID == -1 || mapEntry->ParentMapID == mapEntry->CosmeticParentMapID,
+                "Inconsistent parent map data for map %u (ParentMapID = %hd, CosmeticParentMapID = %hd)",
+                mapEntry->ID, mapEntry->ParentMapID, mapEntry->CosmeticParentMapID);
+
             mapData[mapEntry->ParentMapID].push_back(mapEntry->ID);
+        }
+        else if (mapEntry->CosmeticParentMapID != -1)
+            mapData[mapEntry->CosmeticParentMapID].push_back(mapEntry->ID);
     }
 
     sMapMgr->InitializeParentMapData(mapData);
@@ -3086,7 +3094,7 @@ void World::UpdateRealmCharCount(uint32 accountId)
 {
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_COUNT);
     stmt->setUInt32(0, accountId);
-    _queryProcessor.AddQuery(CharacterDatabase.AsyncQuery(stmt).WithPreparedCallback(std::bind(&World::_UpdateRealmCharCount, this, std::placeholders::_1)));
+    _queryProcessor.AddCallback(CharacterDatabase.AsyncQuery(stmt).WithPreparedCallback(std::bind(&World::_UpdateRealmCharCount, this, std::placeholders::_1)));
 }
 
 void World::_UpdateRealmCharCount(PreparedQueryResult resultCharCount)
@@ -3507,7 +3515,7 @@ uint32 World::getWorldState(uint32 index) const
 
 void World::ProcessQueryCallbacks()
 {
-    _queryProcessor.ProcessReadyQueries();
+    _queryProcessor.ProcessReadyCallbacks();
 }
 
 void World::ReloadRBAC()
