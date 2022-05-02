@@ -2886,7 +2886,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
          if (!targets)
             if (WorldObject* baseObject = GetBaseObject())
             {
-                for (WorldObject* const target : targets)
+                for (WorldObject* const target : *targets)
                 {
                     if (Player* playerTarget = target->ToPlayer())
                     {
