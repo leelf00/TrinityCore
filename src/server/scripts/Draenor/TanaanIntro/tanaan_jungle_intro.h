@@ -14,15 +14,3 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include "ScriptMgr.h"
-#include "ScriptedCreature.h"
-#include "ScriptedEscortAI.h"
-#include "CreatureTextMgr.h"
-#include "GameObjectAI.h"
-#include "tanaan_jungle_intro.h"
-
-void AddSC_tanaan_jungle_intro()
-{
-
-}
