@@ -16,6 +16,10 @@
  */
 
 #include "SmartScriptMgr.h"
+#include "AreaTriggerDataStore.h"
+#include "AreaTriggerTemplate.h"
+#include "ConversationDataStore.h"
+#include "CreatureTextMgr.h"
 #include "DB2Stores.h"
 #include "CreatureTextMgr.h"
 #include "DatabaseEnv.h"
@@ -188,6 +192,15 @@ void SmartAIMgr::LoadSmartAIFromDB()
                     if (!sAreaTriggerStore.LookupEntry((uint32)temp.entryOrGuid))
                     {
                         TC_LOG_ERROR("sql.sql", "SmartAIMgr::LoadSmartAIFromDB: AreaTrigger entry (%u) does not exist, skipped loading.", uint32(temp.entryOrGuid));
+                        continue;
+                    }
+                    break;
+                }
+                case SMART_SCRIPT_TYPE_QUEST:
+                {
+                    if (!sObjectMgr->GetQuestTemplate((uint32)temp.entryOrGuid))
+                    {
+                        TC_LOG_ERROR("sql.sql", "SmartAIMgr::LoadSmartAIFromDB: Quest entry (%u) does not exist, skipped loading.", uint32(temp.entryOrGuid));
                         continue;
                     }
                     break;
@@ -980,6 +993,18 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
                     return false;
                 }
                 break;
+            case SMART_EVENT_QUEST_OBJ_COPLETETION:
+                if (!sObjectMgr->GetQuestObjective(e.event.questObjective.id))
+                {
+                    TC_LOG_ERROR("sql.sql", "SmartAIMgr: Event SMART_EVENT_QUEST_OBJ_COPLETETION using invalid objective id %u, skipped.", e.event.questObjective.id);
+                    return false;
+                }
+                break;
+            case SMART_EVENT_QUEST_ACCEPTED:
+            case SMART_EVENT_QUEST_COMPLETION:
+            case SMART_EVENT_QUEST_REWARDED:
+            case SMART_EVENT_QUEST_FAIL:
+                break;
             case SMART_EVENT_LINK:
             case SMART_EVENT_GO_STATE_CHANGED:
             case SMART_EVENT_GO_EVENT_INFORM:
@@ -997,11 +1022,6 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
             case SMART_EVENT_EVADE:
             case SMART_EVENT_REACHED_HOME:
             case SMART_EVENT_RESET:
-            case SMART_EVENT_QUEST_ACCEPTED:
-            case SMART_EVENT_QUEST_OBJ_COPLETETION:
-            case SMART_EVENT_QUEST_COMPLETION:
-            case SMART_EVENT_QUEST_REWARDED:
-            case SMART_EVENT_QUEST_FAIL:
             case SMART_EVENT_JUST_SUMMONED:
             case SMART_EVENT_WAYPOINT_START:
             case SMART_EVENT_WAYPOINT_REACHED:
@@ -1523,6 +1543,16 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
             break;
         }
         case SMART_ACTION_START_CLOSEST_WAYPOINT:
+        case SMART_ACTION_CREATE_CONVERSATION:
+        {
+            if (!sConversationDataStore->GetConversationTemplate(e.action.conversation.id))
+            {
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr: SMART_ACTION_CREATE_CONVERSATION Entry " SI64FMTD " SourceType %u Event %u Action %u uses invalid entry %u, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType(), e.action.conversation.id);
+                return false;
+            }
+
+            break;
+        }
         case SMART_ACTION_FOLLOW:
         case SMART_ACTION_SET_ORIENTATION:
         case SMART_ACTION_STORE_TARGET_LIST:
