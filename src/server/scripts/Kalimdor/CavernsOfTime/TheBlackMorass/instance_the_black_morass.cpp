@@ -38,7 +38,15 @@ enum Misc
     RIFT_BOSS                         = 1
 };
 
-inline uint32 RandRiftBoss() { return ((rand32() % 2) ? NPC_RIFT_KEEPER : NPC_RIFT_LORD); }
+uint32 NpcRiftBossEntry[4]=
+{
+    NPC_RIFT_KEEPER,
+    NPC_RIFT_KEEPER2,
+    NPC_RIFT_LORD,
+    NPC_RIFT_LORD2
+};
+
+inline uint32 RandRiftBoss() { return NpcRiftBossEntry[(rand32() % 4)]; }
 
 float PortalLocation[4][4]=
 {
@@ -95,6 +103,7 @@ public:
         uint8  mRiftWaveId;
 
         ObjectGuid _medivhGUID;
+        ObjectGuid riftBossGUID;
         uint8  _currentRiftId;
 
         void Clear()
@@ -107,6 +116,7 @@ public:
             mRiftWaveId         = 0;
 
             _currentRiftId      = 0;
+            Events.Reset();
         }
 
         void InitWorldState(bool Enable = true)
@@ -175,7 +185,7 @@ public:
 
                     DoUpdateWorldState(WORLD_STATE_BM_SHIELD, mShieldPercent);
 
-                    if (!mShieldPercent)
+                    if (mShieldPercent == 0)
                     {
                         if (Creature* medivh = instance->GetCreature(_medivhGUID))
                         {
@@ -184,6 +194,7 @@ public:
                                 medivh->KillSelf();
                                 m_auiEncounter[0] = FAIL;
                                 m_auiEncounter[1] = NOT_STARTED;
+                                Clear();
                             }
                         }
                     }
@@ -226,7 +237,7 @@ public:
             case TYPE_RIFT:
                 if (data == SPECIAL)
                 {
-                    if (mRiftPortalCount < 7)
+                    if ( mRiftPortalCount < 18)
                         ScheduleEventNextPortal(5s);
                 }
                 else
@@ -274,7 +285,10 @@ public:
             pos.m_positionZ = std::max(me->GetMap()->GetHeight(pos.m_positionX, pos.m_positionY, MAX_HEIGHT), me->GetMap()->GetWaterLevel(pos.m_positionX, pos.m_positionY));
 
             if (Creature* summon = me->SummonCreature(entry, pos, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 10min))
+            {
+                riftBossGUID = summon->GetGUID();
                 return summon;
+            }
 
             TC_LOG_DEBUG("scripts", "Instance The Black Morass: What just happened there? No boss, no loot, no fun...");
             return nullptr;

@@ -37,6 +37,13 @@ enum MedivhBm
     SAY_ORCS_ENTER                       = 7,
     SAY_ORCS_ANSWER                      = 8,
 
+    EVENT_COUNCIL_WAVE1                  = 1,
+    EVENT_COUNCIL_WAVE2                  = 2,
+    EVENT_COUNCIL_WAVE3                  = 3,
+    EVENT_COUNCIL_WAVE4                  = 4,
+    EVENT_MEDIVH_SAY_ORCS_ENTER          = 5,
+    EVENT_COUNCIL_SAY_ORCS_ANSWER        = 6,
+
     SPELL_CHANNEL                        = 31556,
     SPELL_PORTAL_RUNE                    = 32570,    // aura(portal on ground effect)
 
@@ -102,6 +109,86 @@ enum MedivhBm
     C_COUNCIL_ENFORCER                   = 17023
 };
 
+float CouncilEnforcerWave1Pos[6][4]=  // 05/20/2012 03:24:28.130
+{
+    {-2086.8477f,    7132.722f,     34.671482f,    6.126106f }, // 19517
+    {-2087.1946f,    7129.969f,     34.67148f,     6.143559f }, // 19518
+    {-2087.4797f,    7127.2734f,    34.671482f,    6.161012f }, // 19519
+    {-2087.8013f,    7124.5103f,    34.671482f,    6.1784654f}, // 19520
+    {-2088.082f,     7121.8877f,    34.67148f,     6.1959186f}, // 19521
+    {-2088.3865f,    7119.379f,     34.671482f,    6.213372f }  // 19522
+};
+
+float CouncilEnforcerWave2Pos[6][4]=  // 05/20/2012 03:24:30.158
+{
+    {-2086.5723f,    7132.635f,     34.67148f,     6.126106f},  // 19523
+    {-2087.409f,     7127.2026f,    34.671482f,    6.161012f},  // 19524
+    {-2087.8833f,    7124.376f,     34.671482f,   6.1784654f},  // 19525
+    {-2088.2249f,    7121.99f,      34.671474f,   6.1959186f},  // 19526
+    {-2088.5989f,    7119.243f,     34.67148f,     6.213372f},  // 19527
+    {-2086.9849f,    7129.968f,     34.67148f,     6.143559f}   // 19528
+};
+
+float CouncilEnforcerWave3Pos[6][4]=  // 05/20/2012 03:24:32.561
+{
+    {-2086.9536f,    7129.987f,     34.671482f,     6.143559f},  // 19529
+    {-2086.509f,     7132.6777f,    34.67148f,      6.126106f},  // 19530
+    {-2087.3103f,    7127.19f,      34.671482f,     6.161012f},  // 19531
+    {-2087.6462f,    7124.358f,     34.67148f,     6.1784654f},  // 19532
+    {-2088.0132f,    7121.874f,     34.67148f,     6.1959186f},  // 19533
+    {-2088.501f,     7119.221f,     34.67148f,      6.213372f}   // 19534
+};
+
+float CouncilEnforcerWave4Pos[6][4]=  // 05/20/2012 03:24:34.979
+{
+    {-2086.9536f,    7129.987f,     34.671482f,     6.143559f},  // 19535
+    {-2086.8782f,    7129.967f,     34.67148f,      6.143559f},  // 19536
+    {-2087.149f,     7127.2046f,    34.67148f,      6.143559f},  // 19537
+    {-2087.4875f,    7124.4136f,    34.67148f,     6.1784654f},  // 19538
+    {-2087.8918f,    7121.918f,     34.67148f,     6.1959186f},  // 19539
+    {-2088.3884f,    7119.204f,     34.67148f,      6.213372f}   // 19540
+};
+
+float CouncilEnforcerWave1WPs[6][2][3]=
+{
+    {{-2084.1829f,    7132.281f,       34.648f},    {-2045.5182f,    7128.8394f,    24.624517f}},
+    {{-2085.246f,     7129.609f,      34.8077f},    {-2045.7974f,    7126.2485f,    24.443928f}},
+    {{-2086.0464f,    7126.9746f,   34.751137f},    {-2046.1133f,    7123.1763f,    24.330793f}},
+    {{-2085.871f,     7124.3896f,   34.775032f},    {-2044.941f,     7120.269f,     23.878582f}},
+    {{-2086.4094f,    7121.713f,    34.823685f},    {-2047.2369f,    7118.0376f,    24.475895f}},
+    {{-2086.8538f,    7119.0415f,   34.669765f},    {-2047.8209f,    7115.204f,     24.66805f}}
+};
+
+float CouncilEnforcerWave2WPs[6][2][3]=
+{
+    {{-2084.4084f,    7132.2734f,   34.836506f},    {-2051.7446f,    7129.4126f,    27.501535f}},
+    {{-2084.9575f,    7127.092f,     34.87588f},    {-2053.0063f,    7123.481f,      27.08028f}},
+    {{-2084.6553f,    7124.0728f,    34.70954f},    {-2052.927f,     7120.2695f,    26.747597f}},
+    {{-2085.5784f,    7121.6196f,    34.69463f},    {-2054.432f,     7117.749f,     27.217783f}},
+    {{-2086.9763f,    7119.2246f,     34.6985f},    {-2053.3538f,    7114.2056f,    26.725523f}},
+    {{-2084.9065f,    7129.718f,     34.64542f},    {-2052.3281f,     7125.968f,    27.119364f}}
+};
+
+float CouncilEnforcerWave3WPs[6][2][3]=
+{
+    {{-2085.251f,    7129.9688f,    34.759438f},    {-2065.048f,     7127.451f,     30.347391f}},
+    {{-2083.7397f,   7132.198f,      34.71596f},    {-2064.9705f,    7129.719f,     30.260447f}},
+    {{-2085.726f,    7126.8955f,     34.78042f},    {-2065.6416f,    7125.1006f,     30.38935f}},
+    {{-2086.1528f,   7124.1562f,     34.75782f},    {-2065.6597f,    7122.454f,     30.344164f}},
+    {{-2084.8438f,   7121.5435f,     34.68887f},    {-2065.1746f,    7119.713f,     30.206259f}},
+    {{-2085.176f,    7118.9185f,    34.875107f},    {-2064.851f,     7116.6157f,    30.078735f}}
+};
+
+float CouncilEnforcerWave4WPs[6][2][3]=
+{
+    {{-2082.52f,     7132.08f,      34.577217f},    {-2082.52f,      7132.08f,      34.577217f}},
+    {{-2083.65f,     7129.36f,      34.583836f},    {-2083.65f,      7129.36f,      34.583836f}},
+    {{-2083.05f,     7126.4f,        34.58211f},    {-2083.05f,      7126.4f,        34.58211f}},
+    {{-2082.417f,    7123.9824f,     34.75353f},    {-2081.3464f,    7123.551f,      33.83558f}},
+    {{-2083.91f,     7121.34f,      34.588364f},    {-2083.91f,      7121.34f,      34.588364f}},
+    {{-2083.99f,     7118.74f,       34.58981f},    {-2083.99f,      7118.74f,       34.58981f}}
+};
+
 struct npc_medivh_bm : public ScriptedAI
 {
     npc_medivh_bm(Creature* creature) : ScriptedAI(creature)
@@ -128,6 +215,8 @@ struct npc_medivh_bm : public ScriptedAI
     bool Life50;
     bool Life25;
 
+    EventMap events;
+
     void Reset() override
     {
         Initialize();
@@ -146,6 +235,7 @@ struct npc_medivh_bm : public ScriptedAI
                 return;
 
             Talk(SAY_ENTER);
+            events.ScheduleEvent(EVENT_COUNCIL_WAVE1, 2s); //test
             instance->SetData(TYPE_MEDIVH, IN_PROGRESS);
             DoCast(me, SPELL_CHANNEL, false);
             Check_Timer = 5000;
@@ -191,16 +281,51 @@ struct npc_medivh_bm : public ScriptedAI
             SpellCorrupt_Timer = 3000;
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
-        if (killer && killer->GetEntry() == me->GetEntry())
-            return;
-
         Talk(SAY_DEATH);
+        Reset();
     }
 
     void UpdateAI(uint32 diff) override
     {
+        events.Update(diff);
+        switch (events.ExecuteEvent())
+        {
+              case EVENT_COUNCIL_WAVE1:
+                  SummonCouncilEnforcer(1); // 05/20/2012 03:24:28.130 19s after say win
+                  events.ScheduleEvent(EVENT_COUNCIL_WAVE2, 2s);
+                  break;
+
+              case EVENT_COUNCIL_WAVE2:
+                  SummonCouncilEnforcer(2);
+                  events.ScheduleEvent(EVENT_COUNCIL_WAVE3, 2s);
+                  break;
+
+              case EVENT_COUNCIL_WAVE3:
+                  SummonCouncilEnforcer(3);
+                  events.ScheduleEvent(EVENT_COUNCIL_WAVE4, 2s);
+                  break;
+
+              case EVENT_COUNCIL_WAVE4:
+                  SummonCouncilEnforcer(4); // 25s after say win
+                  events.ScheduleEvent(EVENT_MEDIVH_SAY_ORCS_ENTER, 8s);
+                  break;
+
+              case EVENT_MEDIVH_SAY_ORCS_ENTER: // 33s after say win
+                  Talk(SAY_ORCS_ENTER); // 05/20/2012 03:24:42.841
+                  events.ScheduleEvent(EVENT_COUNCIL_SAY_ORCS_ANSWER, 2s);
+                  break;
+
+              case EVENT_COUNCIL_SAY_ORCS_ANSWER:
+                  Talk(SAY_ORCS_ANSWER);
+                  // events.ScheduleEvent(COUNCIL_WAVE4, 2s);
+                  break;
+
+              default:
+                  break;
+        }
+
         if (SpellCorrupt_Timer)
         {
             if (SpellCorrupt_Timer <= diff)
@@ -250,7 +375,7 @@ struct npc_medivh_bm : public ScriptedAI
 
                 if (instance->GetData(TYPE_RIFT) == DONE)
                 {
-                    Talk(SAY_WIN);
+                    Talk(SAY_WIN); // 05/20/2012 03:24:09.020
                     Check_Timer = 0;
 
                     if (me->HasAura(SPELL_CHANNEL))
@@ -267,6 +392,43 @@ struct npc_medivh_bm : public ScriptedAI
 
         //DoMeleeAttackIfReady();
     }
+
+    void SummonCouncilEnforcer(uint32 councilWaveId)
+    {
+        switch (councilWaveId)
+        {
+            case 1:
+                SummonCouncilEnforcerWave(CouncilEnforcerWave1Pos,CouncilEnforcerWave1WPs);
+                break;
+
+            case 2:
+                SummonCouncilEnforcerWave(CouncilEnforcerWave2Pos,CouncilEnforcerWave2WPs);
+                break;
+
+            case 3:
+                SummonCouncilEnforcerWave(CouncilEnforcerWave3Pos,CouncilEnforcerWave3WPs);
+                break;
+
+            case 4:
+                SummonCouncilEnforcerWave(CouncilEnforcerWave4Pos,CouncilEnforcerWave4WPs);
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    void SummonCouncilEnforcerWave(float CouncilEnforcerWavePos[6][4], float CouncilEnforcerWaveWPs[6][2][3])
+    {
+        for (uint8 i = 0; i < 6; ++i)
+        {
+            Creature* council = me->SummonCreature(C_COUNCIL_ENFORCER, CouncilEnforcerWavePos[i][0], CouncilEnforcerWavePos[i][1], CouncilEnforcerWavePos[i][2], CouncilEnforcerWavePos[i][3], TEMPSUMMON_TIMED_DESPAWN, 180s);
+            council->GetMotionMaster()->MovePoint(0, CouncilEnforcerWaveWPs[i][0][0], CouncilEnforcerWaveWPs[i][0][1], CouncilEnforcerWaveWPs[i][0][2]);
+            council->GetMotionMaster()->MovePoint(0, CouncilEnforcerWaveWPs[i][1][0], CouncilEnforcerWaveWPs[i][1][1], CouncilEnforcerWaveWPs[i][1][2]);
+        }
+    }
+
 };
 
 struct Wave
