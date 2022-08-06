@@ -94,14 +94,10 @@ enum DraenorIntro
     GOSSIP_MENU_OPTION        = 0,
 };
 
-class npc_archmage_khadgar_blastedlands : public CreatureScript
+struct npc_archmage_khadgar_blastedlands : public ScriptedAI
 {
 public:
-     npc_archmage_khadgar_blastedlands() : CreatureScript("npc_archmage_khadgar_blastedlands") { }
-
-     struct npc_archmage_khadgar_blastedlandsAI : public ScriptedAI
-     {
-         npc_archmage_khadgar_blastedlandsAI(Creature* creature) : ScriptedAI(creature) { }
+     npc_archmage_khadgar_blastedlands(Creature* creature) : ScriptedAI(creature) { }
 
          bool OnGossipHello(Player* player)
          {
@@ -140,8 +136,7 @@ public:
                  }
              }
          }
-     };
-};
+ };
 
 void AddSC_blasted_lands()
 {
