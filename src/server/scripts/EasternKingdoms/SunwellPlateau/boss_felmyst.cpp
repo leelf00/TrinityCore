@@ -40,6 +40,7 @@ enum Yells
     YELL_BERSERK                                  = 4,
     YELL_DEATH                                    = 5,
   //YELL_KALECGOS                                 = 6, Not used. After felmyst's death spawned and say this
+    EMOTE_BREATH                                  = 7,
 };
 
 enum Spells
@@ -107,6 +108,12 @@ enum EventFelmyst
     EVENT_FLIGHT_SEQUENCE,
     EVENT_SUMMON_DEAD,
     EVENT_SUMMON_FOG
+};
+
+enum MiscNPCs
+{
+    NPC_TRIGGER_LEFT  = 25357,
+    NPC_TRIGGER_RIGHT = 25358
 };
 
 class boss_felmyst : public CreatureScript
@@ -357,16 +364,26 @@ public:
                         return;
                     }
 
-                    breathX = target->GetPositionX();
-                    breathY = target->GetPositionY();
-                    float x, y, z;
-                    target->GetContactPoint(me, x, y, z, 70);
-                    me->GetMotionMaster()->MovePoint(0, x, y, z+10);
+                    // breathX = target->GetPositionX();
+                    // breathY = target->GetPositionY();
+                    // float x, y, z;
+                    // target->GetContactPoint(me, x, y, z, 70);
+                    // me->GetMotionMaster()->MovePoint(0, x, y, z+10);
+                    if ((uiBreathCount == 1) | (uiBreathCount == 3))
+                        if (Unit* target = GetClosestCreatureWithEntry(me, NPC_TRIGGER_RIGHT, 1000.0f, true))
+                        {
+                            breathX = target->GetPositionX();
+                            breathY = target->GetPositionY();
+                            float x, y, z;
+                            target->GetContactPoint(me, x, y, z, 2);
+                            me->GetMotionMaster()->MovePoint(0, x, y, z + 2);
+                        }
                     break;
                 }
                 case 6:
                     me->SetFacingTo(me->GetAbsoluteAngle(breathX, breathY));
                     //DoTextEmote("takes a deep breath.", nullptr);
+                    Talk(EMOTE_BREATH);
                     events.ScheduleEvent(EVENT_FLIGHT_SEQUENCE, 10s);
                     break;
                 case 7:
