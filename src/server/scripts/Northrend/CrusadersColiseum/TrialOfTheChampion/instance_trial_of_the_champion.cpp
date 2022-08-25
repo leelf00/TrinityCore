@@ -65,7 +65,7 @@ class instance_trial_of_the_champion : public InstanceMapScript
 
         struct instance_trial_of_the_champion_InstanceMapScript : public InstanceScript
         {
-            instance_trial_of_the_champion_InstanceMapScript(Map* map) : InstanceScript(map)
+            instance_trial_of_the_champion_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
             {
                 SetHeaders(DataHeader);
                 SetBossNumber(MAX_ENCOUNTER);
@@ -200,9 +200,10 @@ class instance_trial_of_the_champion : public InstanceMapScript
                                 announcer->GetMotionMaster()->MovePoint(1, announcerWaitPos);
                                 announcer->AI()->SetData(DATA_GRAND_CHAMPIONS_DONE, 0);
 
-                                DoRespawnGameObject(GetObjectGuid(DATA_CHAMPION_S_CACHE), 1 * DAY);
+                                DoRespawnGameObject(GetObjectGuid(DATA_CHAMPION_S_CACHE), 24h);
                                 if (GameObject* cache = GetGameObject(DATA_CHAMPION_S_CACHE))
-                                    cache->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
+                                    //cache->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
+                                    cache->RemoveFlag(GO_FLAG_NOT_SELECTABLE);
                             }
                         }
                         break;
@@ -247,9 +248,10 @@ class instance_trial_of_the_champion : public InstanceMapScript
                                         break;
                                 }
 
-                                DoRespawnGameObject(GetObjectGuid(dataType), 1 * DAY);
+                                DoRespawnGameObject(GetObjectGuid(dataType), 24h);
                                 if (GameObject* cache = GetGameObject(dataType))
-                                    cache->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
+                                    //cache->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
+                                    cache->RemoveFlag(GO_FLAG_NOT_SELECTABLE);
                             }
                         }
                         break;

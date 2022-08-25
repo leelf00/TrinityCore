@@ -136,9 +136,10 @@ public:
             Initialize();
         }
 
-        void SpellHitTarget(Unit* target, SpellInfo const* spell) override
+
+        void SpellHitTarget(WorldObject* target, SpellInfo const* spellInfo) override
         {
-            if (spell->Id == SPELL_EXPLODE || spell->Id == SPELL_EXPLODE_H)
+            if (spellInfo->Id == SPELL_EXPLODE || spellInfo->Id == SPELL_EXPLODE_H)
             {
                 if (!target->ToPlayer())
                     return;
@@ -163,7 +164,7 @@ public:
                 Talk(urand(0, 2));
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/) override
+        void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/, DamageEffectType /*damageType*/, SpellInfo const* /*spellInfo = nullptr*/) override
         {
             if (HealthBelowPct(31) && !doExplode)
             {
@@ -176,14 +177,14 @@ public:
 
         void JustEngagedWith(Unit* /*who*/) override
         {
-            events.ScheduleEvent(EVENT_CLAW, 3000);
-            events.ScheduleEvent(EVENT_LEAP, 2000);
+            events.ScheduleEvent(EVENT_CLAW, 3000ms);
+            events.ScheduleEvent(EVENT_LEAP, 2000ms);
             DoZoneInCombat();
         }
 
         void JustDied(Unit* /*killer*/) override
         {
-            me->DespawnOrUnsummon(1000);
+            me->DespawnOrUnsummon(1000ms);
         }
 
         void KilledUnit(Unit* who) override
@@ -213,20 +214,20 @@ public:
                 {
                     case EVENT_CLAW:
                         DoCastVictim(SPELL_CLAW);
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 50.0f, true))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 1, 50.0f, true))
                         {
                             ResetThreatList();
                             AddThreat(target, 10.0f);
                             me->AI()->AttackStart(target);
                         }
-                        events.ScheduleEvent(EVENT_CLAW, urand(12000, 15000));
+                        events.ScheduleEvent(EVENT_CLAW, 12s, 15s);
                         break;
                     case EVENT_LEAP:
                         if (me->GetEntry() == NPC_RISEN_ARELAS || me->GetEntry() == NPC_RISEN_JAEREN)
                         {
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 30.0f, true))
+                            if (Unit* target = SelectTarget(SelectTargetMethod::Random, 1, 30.0f, true))
                                 DoCast(target, SPELL_LEAP);
-                            events.ScheduleEvent(EVENT_LEAP, urand(8000, 10000));
+                            events.ScheduleEvent(EVENT_LEAP, 8s, 10s);
                         }
                         break;
                     default:
@@ -286,17 +287,17 @@ public:
             if (uiPhase == PHASE_GHOST)
             {
                 // Phase 3
-                events.ScheduleEvent(EVENT_DEATH_BITE, 5000);
-                events.ScheduleEvent(EVENT_MARKED_DEATH, 20000);
+                events.ScheduleEvent(EVENT_DEATH_BITE, 5000ms);
+                events.ScheduleEvent(EVENT_MARKED_DEATH, 20000ms);
             }
             else
             {
                 // Phase 1 and 2
-                events.ScheduleEvent(EVENT_ICY_TOUCH, 6000);
+                events.ScheduleEvent(EVENT_ICY_TOUCH, 6000ms);
                 if (uiPhase == PHASE_UNDEAD)
                 {
                     // Phase 1 only
-                    events.ScheduleEvent(EVENT_DEATH_RESPITE, 8000);
+                    events.ScheduleEvent(EVENT_DEATH_RESPITE, 8000ms);
 
                     // Raising announcer as a ghoul
                     if (Creature* announcer = instance->GetCreature(DATA_ANNOUNCER))
@@ -310,8 +311,8 @@ public:
                 else
                 {
                     // Phase 2 only
-                    events.ScheduleEvent(EVENT_DESECRATION, 5000);
-                    events.ScheduleEvent(EVENT_GHOUL_EXPLODE, 8000);
+                    events.ScheduleEvent(EVENT_DESECRATION, 5000ms);
+                    events.ScheduleEvent(EVENT_GHOUL_EXPLODE, 8000ms);
 
                     // Army of the Dead
                     // disabling movement temporarily so the spell wont get interrupted
@@ -327,9 +328,9 @@ public:
                 achievementCredit = false;
         }
 
-        void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
+        void SpellHit(WorldObject* /*caster*/, SpellInfo const* spellInfo) override
         {
-            if (spell->Id == SPELL_BLACK_KNIGHT_RES)
+            if (spellInfo->Id == SPELL_BLACK_KNIGHT_RES)
             {
                 // TODO: According to sniffs, The Black Knight should update
                 // creature template to another entry, not just change his display id
@@ -376,7 +377,7 @@ public:
             summon->AI()->AttackStart(me->GetVictim());
         }
 
-        void DamageTaken(Unit* /*done_by*/, uint32& damage) override
+        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*damageType*/, SpellInfo const* /*spellInfo = nullptr*/) override
         {
             if (damage >= me->GetHealth() && uiPhase < PHASE_GHOST)
             {
@@ -430,38 +431,38 @@ public:
                 {
                     case EVENT_ICY_TOUCH:
                         DoCastVictim(SPELL_ICY_TOUCH);
-                        events.ScheduleEvent(EVENT_PLAGUE_STRIKE, 1000);
+                        events.ScheduleEvent(EVENT_PLAGUE_STRIKE, 1000ms);
                         break;
                     case EVENT_PLAGUE_STRIKE:
                         DoCastVictim(SPELL_PLAGUE_STRIKE);
-                        events.ScheduleEvent(EVENT_OBLITERATE, 5000);
+                        events.ScheduleEvent(EVENT_OBLITERATE, 5000ms);
                         break;
                     case EVENT_OBLITERATE:
                         DoCastVictim(SPELL_OBLITERATE);
-                        events.ScheduleEvent(EVENT_ICY_TOUCH, urand(5000, 8000));
+                        events.ScheduleEvent(EVENT_ICY_TOUCH, 5s ,8s);
                         break;
                     case EVENT_DEATH_RESPITE:
                         // TODO: fixing this later
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 50.0f, true))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 1, 50.0f, true))
                             DoCast(target, SPELL_DEATH_RESPITE);
-                        events.ScheduleEvent(EVENT_DEATH_RESPITE, urand(15000, 16000));
+                        events.ScheduleEvent(EVENT_DEATH_RESPITE, 15s, 16s);
                         break;
                     case EVENT_DESECRATION:
                         DoCastVictim(SPELL_DESECRATION);
-                        events.ScheduleEvent(EVENT_DESECRATION, urand(15000, 16000));
+                        events.ScheduleEvent(EVENT_DESECRATION, 15s, 16s);
                         break;
                     case EVENT_GHOUL_EXPLODE:
                         DoCastAOE(SPELL_GHOUL_EXPLODE);
-                        events.ScheduleEvent(EVENT_GHOUL_EXPLODE, urand(15000, 16000));
+                        events.ScheduleEvent(EVENT_GHOUL_EXPLODE, 15s, 16s);
                         break;
                     case EVENT_DEATH_BITE:
                         DoCastAOE(SPELL_DEATH_BITE);
-                        events.ScheduleEvent(EVENT_DEATH_BITE, 3000);
+                        events.ScheduleEvent(EVENT_DEATH_BITE, 3s);
                         break;
                     case EVENT_MARKED_DEATH:
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 50.0f))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 50.0f))
                             DoCast(target, SPELL_MARKED_DEATH);
-                        events.ScheduleEvent(EVENT_MARKED_DEATH, urand(13000, 15000));
+                        events.ScheduleEvent(EVENT_MARKED_DEATH, 13s, 15s);
                         break;
                     default:
                         break;
@@ -567,7 +568,8 @@ public:
             // when the dummy aura is removed, announcer 'dies'
             GetTarget()->RemoveAura(SPELL_DEATH_RESPITE_DND);
             GetTarget()->CastSpell(GetTarget(), SPELL_FEIGN_DEATH, true);
-            GetTarget()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            //GetTarget()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            GetTarget()->SetUnitFlag(UNIT_FLAG_UNINTERACTIBLE);
         }
 
         void Register() override

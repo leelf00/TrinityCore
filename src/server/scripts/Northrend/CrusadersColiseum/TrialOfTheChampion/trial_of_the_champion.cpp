@@ -327,18 +327,18 @@ class npc_announcer_toc5 : public CreatureScript
         void NextStep(uint32 uiTimerStep, uint32 currentEvent, bool bNextStep = true, uint8 uiPhaseStep = 0)
         {
             if (bNextStep)
-                events.ScheduleEvent(currentEvent + 1, uiTimerStep);
+                events.ScheduleEvent(currentEvent + 1, Milliseconds(uiTimerStep));
             else
             {
                 if (uiPhaseStep > 0)
-                    events.ScheduleEvent(uiPhaseStep, uiTimerStep);
+                    events.ScheduleEvent(uiPhaseStep, Milliseconds(uiTimerStep));
             }
         }
 
         void Reset() override
         {
             events.Reset();
-            events.ScheduleEvent(EVENT_CHEER_RND, 120000);
+            events.ScheduleEvent(EVENT_CHEER_RND, 120000ms);
         }
 
         void SetData(uint32 uiType, uint32 uiData) override
@@ -758,7 +758,8 @@ class npc_announcer_toc5 : public CreatureScript
                 switch (eventId)
                 {
                     case EVENT_CHEER_RND:
-                        if (events.GetNextEventTime() == 0 && !me->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) && !me->isMoving() && !me->HasAura(66804))
+                        //if (events.GetNextEventTime() == 0 && !me->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) && !me->isMoving() && !me->HasAura(66804))
+                        if (events.GetTimeUntilEvent(EVENT_CHEER_RND) == Milliseconds(0) && !me->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) && !me->isMoving() && !me->HasAura(66804))
                         {
                             // Every 2 minutes a random player is being cheered by his/her race's spectators
                             // cheer should only occur during fights
@@ -789,7 +790,7 @@ class npc_announcer_toc5 : public CreatureScript
                                 }
                             }
                         }
-                        events.ScheduleEvent(EVENT_CHEER_RND, 120000);
+                        events.ScheduleEvent(EVENT_CHEER_RND, 120000ms);
                         break;
                     // Phases below happen in Grand Champions encounter
                     case EVENT_INTRODUCE:
@@ -1254,7 +1255,7 @@ class npc_announcer_toc5 : public CreatureScript
             UpdateVictim();
         }
 
-        bool GossipHello(Player* player) override
+        bool OnGossipHello(Player* player) override
         {
 
             InstanceScript* instance = me->GetInstanceScript();
@@ -1315,7 +1316,7 @@ class npc_announcer_toc5 : public CreatureScript
             return true;
         }
 
-        bool GossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
+        bool OnGossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
         {
             uint32 const action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
             ClearGossipMenuFor(player);

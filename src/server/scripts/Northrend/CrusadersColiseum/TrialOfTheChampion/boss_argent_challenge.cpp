@@ -272,7 +272,7 @@ public:
             argent_challenge_baseAI::OnReset();
         }
 
-        void DamageTaken(Unit* /*done_by*/, uint32& damage) override
+        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*damageType*/, SpellInfo const* /*spellInfo = nullptr*/) override
         {
             if (instance->GetBossState(DATA_ARGENT_CHALLENGE) == DONE)
             {
@@ -326,7 +326,7 @@ public:
                         events.ScheduleEvent(EVENT_HAMMER_OF_JUSTICE, 20s, 30s);
                         break;
                     case EVENT_HAMMER_OF_JUSTICE:
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 100.0f, true))
                         {
                             DoCast(target, SPELL_HAMMER_JUSTICE, true);
                             DoCast(target, SPELL_HAMMER_RIGHTEOUS);
@@ -413,7 +413,7 @@ public:
             return _memory->GetEntry();
         }
 
-        void DamageTaken(Unit* /*done_by*/, uint32 &damage) override
+        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*damageType*/, SpellInfo const* /*spellInfo = nullptr*/) override
         {
             if (instance->GetBossState(DATA_ARGENT_CHALLENGE) == DONE)
             {
@@ -490,12 +490,12 @@ public:
                 switch (eventId)
                 {
                     case EVENT_HOLY_SMITE_E:
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 50.0f, true))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 50.0f, true))
                             DoCast(target, SPELL_SMITE);
                         events.Repeat(2s, 3s);
                         break;
                     case EVENT_HOLY_FIRE:
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 30.0f, true))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 30.0f, true))
                             DoCast(target, SPELL_HOLY_FIRE);
                         events.Repeat(9s, 12s);
                         break;
@@ -518,7 +518,7 @@ public:
                         break;
                     case EVENT_SUMMON_MEMORY:
                         // Memory spawns at random player's position
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 50.0f, true))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 50.0f, true))
                             DoCast(target, SPELL_SUMMON_MEMORY, true);
                         break;
                     case EVENT_MEMORY_AGGRESSIVE: {
@@ -689,7 +689,7 @@ public:
                 _fountainGuid = summon->GetGUID();
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage) override
+        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*damageType*/, SpellInfo const* /*spellInfo = nullptr*/) override
         {
             if (me->GetEntry() == NPC_ARGENT_MONK && damage >= me->GetHealth() && !_shielded)
             {
@@ -742,8 +742,8 @@ public:
                     _events.ScheduleEvent(EVENT_PUMMEL, 12s);
                     break;
                 case NPC_PRIESTESS:
-                    _events.ScheduleEvent(EVENT_SHADOW_WORD_PAIN, 500);
-                    _events.ScheduleEvent(EVENT_HOLY_SMITE, 2500);
+                    _events.ScheduleEvent(EVENT_SHADOW_WORD_PAIN, 500ms);
+                    _events.ScheduleEvent(EVENT_HOLY_SMITE, 2500ms);
                     _events.ScheduleEvent(EVENT_FOUNTAIN, 10s);
                     if (IsHeroic())
                         _events.ScheduleEvent(EVENT_MIND_CONTROL, 15s);
@@ -797,7 +797,7 @@ public:
                         break;
                     case EVENT_PUMMEL:
                     {
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, [this](Unit* u) -> bool { return u->IsWithinDist(me, 5.f) && u->IsNonMeleeSpellCast(true); }))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, [this](Unit* u) -> bool { return u->IsWithinDist(me, 5.f) && u->IsNonMeleeSpellCast(true); }))
                             DoCast(target, SPELL_PUMMEL);
 
                         _events.Repeat(12s);
@@ -816,7 +816,7 @@ public:
                         _events.Repeat(50s);
                         break;
                     case EVENT_MIND_CONTROL:
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 30.0f, true))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 1, 30.0f, true))
                             DoCast(target, SPELL_MIND_CONTROL);
                         _events.Repeat(15s);
                         break;
@@ -920,12 +920,12 @@ public:
                 switch (eventId)
                 {
                     case EVENT_OLD_WOUNDS:
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 5.0f, true))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 5.0f, true))
                             DoCast(target, SPELL_OLD_WOUNDS);
                         _events.Repeat(11s, 13s);
                         break;
                     case EVENT_SHADOWS_PAST:
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 40.0f, true))
+                        if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 40.0f, true))
                             DoCast(target, SPELL_SHADOWS_PAST);
                         _events.Repeat(5s, 7s);
                         break;
@@ -1188,7 +1188,8 @@ public:
             if (dmgInfo.GetAttacker() == GetTarget())
                 return;
 
-            int32 bp = CalculatePct(absorbAmount, GetSpellInfo()->Effects[EFFECT_2].CalcValue());
+            //int32 bp = CalculatePct(absorbAmount, GetSpellInfo()->Effects[EFFECT_2].CalcValue());
+            int32 bp = CalculatePct(absorbAmount, GetSpellInfo()->_effects[EFFECT_2].CalcValue());
 
             GetTarget()->CastSpell(dmgInfo.GetAttacker(), SPELL_SHIELD_REFLECT, CastSpellExtraArgs(aurEff).AddSpellBP0(bp));
         }
