@@ -109,6 +109,8 @@ enum MedivhBm
     C_COUNCIL_ENFORCER                   = 17023
 };
 
+std::vector<ObjectGuid> CouncilEnforcerGuid; // 6 councils per wave,total 4 waves
+
 float CouncilEnforcerWave1Pos[6][4]=  // 05/20/2012 03:24:28.130
 {
     {-2086.8477f,    7132.722f,     34.671482f,    6.126106f }, // 19517
@@ -235,7 +237,7 @@ struct npc_medivh_bm : public ScriptedAI
                 return;
 
             Talk(SAY_ENTER);
-            events.ScheduleEvent(EVENT_COUNCIL_WAVE1, 2s); //test
+            //events.ScheduleEvent(EVENT_COUNCIL_WAVE1, 2s); //test
             instance->SetData(TYPE_MEDIVH, IN_PROGRESS);
             DoCast(me, SPELL_CHANNEL, false);
             Check_Timer = 5000;
@@ -318,7 +320,11 @@ struct npc_medivh_bm : public ScriptedAI
                   break;
 
               case EVENT_COUNCIL_SAY_ORCS_ANSWER:
-                  Talk(SAY_ORCS_ANSWER);
+                  if(CouncilEnforcerGuid.size()>0)
+                  {
+                      Creature* council=CouncilEnforcerGuid[0]
+                      council->Talk(SAY_ORCS_ANSWER);
+                  }
                   // events.ScheduleEvent(COUNCIL_WAVE4, 2s);
                   break;
 
@@ -383,6 +389,7 @@ struct npc_medivh_bm : public ScriptedAI
 
                     /// @todo start the post-event here
                     instance->SetData(TYPE_MEDIVH, DONE);
+                    events.ScheduleEvent(EVENT_COUNCIL_WAVE1, 19s);
                 }
             } else Check_Timer -= diff;
         }
@@ -419,11 +426,12 @@ struct npc_medivh_bm : public ScriptedAI
 
     }
 
-    void SummonCouncilEnforcerWave(float CouncilEnforcerWavePos[6][4], float CouncilEnforcerWaveWPs[6][2][3])
+    void SummonCouncilEnforcerWave(float CouncilEnforcerWavePos[6][4], float CouncilEnforcerWaveWPs[6][2][3], uint8)
     {
         for (uint8 i = 0; i < 6; ++i)
         {
             Creature* council = me->SummonCreature(C_COUNCIL_ENFORCER, CouncilEnforcerWavePos[i][0], CouncilEnforcerWavePos[i][1], CouncilEnforcerWavePos[i][2], CouncilEnforcerWavePos[i][3], TEMPSUMMON_TIMED_DESPAWN, 180s);
+            CouncilEnforcerGuid.push_back(council->GetGUID());
             council->GetMotionMaster()->MovePoint(0, CouncilEnforcerWaveWPs[i][0][0], CouncilEnforcerWaveWPs[i][0][1], CouncilEnforcerWaveWPs[i][0][2]);
             council->GetMotionMaster()->MovePoint(0, CouncilEnforcerWaveWPs[i][1][0], CouncilEnforcerWaveWPs[i][1][1], CouncilEnforcerWaveWPs[i][1][2]);
         }
