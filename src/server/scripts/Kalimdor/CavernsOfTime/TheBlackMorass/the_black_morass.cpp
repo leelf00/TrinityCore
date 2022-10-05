@@ -426,7 +426,7 @@ struct npc_medivh_bm : public ScriptedAI
 
     }
 
-    void SummonCouncilEnforcerWave(float CouncilEnforcerWavePos[6][4], float CouncilEnforcerWaveWPs[6][2][3], uint8)
+    void SummonCouncilEnforcerWave(float CouncilEnforcerWavePos[6][4], float CouncilEnforcerWaveWPs[6][2][3])
     {
         for (uint8 i = 0; i < 6; ++i)
         {
