@@ -123,16 +123,24 @@ public:
                  if (player->GetQuestStatus(QUEST_THE_DARK_PORTAL) == QUEST_STATUS_INCOMPLETE)
                  {
                      CloseGossipMenuFor(player);
+                     player->AddMovieDelayedAction(SCENE_ENTER_PORTAL, [player]
+                     {
+                        player->TeleportTo(MAP_TANAAN_JUNGLE, 4066.7370f, -2381.9917f, 94.858f, 2.90f);
+                     });
                      player->SendMovieStart(SCENE_ENTER_PORTAL);
-                     player->TeleportTo(MAP_TANAAN_JUNGLE, 4066.7370f, -2381.9917f, 94.858f, 2.90f);
                      player->KilledMonsterCredit(CREDIT_SPEAK_WITH_KHADGAR);
+                     return true;
                  }
                  else if (player->GetQuestStatus(QUEST_THE_DARK_PORTAL_2) == QUEST_STATUS_INCOMPLETE)
                  {
                      CloseGossipMenuFor(player);
+                     player->AddMovieDelayedAction(SCENE_ENTER_PORTAL, [player]
+                     {
+                        player->TeleportTo(MAP_TANAAN_JUNGLE, 4066.7370f, -2381.9917f, 94.858f, 2.90f);
+                     });
                      player->SendMovieStart(SCENE_ENTER_PORTAL);
-                     player->TeleportTo(MAP_TANAAN_JUNGLE, 4066.7370f, -2381.9917f, 94.858f, 2.90f);
                      player->KilledMonsterCredit(CREDIT_SPEAK_WITH_KHADGAR);
+                     return true;
                  }
              }
          }
