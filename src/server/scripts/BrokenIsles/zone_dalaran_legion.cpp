@@ -54,7 +54,7 @@ public:
             uint32 const action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
             if (action == GOSSIP_ACTION_INFO_DEF + 0)
             {
-                if (player->GetQuestStatus(QUEST_BLINK_OF_AN_EYE == QUEST_STATUS_INCOMPLETE))
+                if (player->GetQuestStatus(QUEST_BLINK_OF_AN_EYE) == QUEST_STATUS_INCOMPLETE)
                 {
                     CloseGossipMenuFor(player);
                     player->AddMovieDelayedAction(SCENE_DALARAN_TELEPORT, [player]
