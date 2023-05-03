@@ -1679,6 +1679,11 @@ bool Player::TeleportTo(WorldLocation const &loc, uint32 options /*= 0*/, uint32
     return TeleportTo(loc.GetMapId(), loc.GetPositionX(), loc.GetPositionY(), loc.GetPositionZ(), loc.GetOrientation(), options, optionParam);
 }
 
+bool Player::SeamlessTeleportToMap(uint32 mapid, uint32 options /*= 0*/)
+{
+    return TeleportTo(mapid, GetPosition(), options | TELE_TO_SEAMLESS);
+}
+
 bool Player::TeleportToBGEntryPoint()
 {
     if (m_bgData.joinPos.m_mapId == MAPID_INVALID)
